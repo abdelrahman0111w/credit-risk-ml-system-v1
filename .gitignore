@@ -71,3 +71,6 @@ htmlcov/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Safety net: never commit CSVs anywhere, not just under data/
+*.csv
