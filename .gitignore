@@ -1,0 +1,73 @@
+# ================================
+# Python
+# ================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# ================================
+# Jupyter
+# ================================
+.ipynb_checkpoints/
+
+# ================================
+# Data (never commit datasets)
+# ================================
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# ================================
+# ML model artifacts
+# ================================
+# General rules FIRST (git uses the LAST matching pattern)...
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.keras
+*.onnx
+models/artifacts/*
+
+# ...then the exception LAST: the 5 trained files the API needs at runtime.
+# Docker/Railway builds from what is committed, so these MUST be tracked.
+!model/artifacts/
+!model/artifacts/*.pkl
+
+# ================================
+# Generated outputs / logs
+# ================================
+outputs/
+reports/
+*.log
+
+# ================================
+# Testing / coverage
+# ================================
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ================================
+# IDE / OS
+# ================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
