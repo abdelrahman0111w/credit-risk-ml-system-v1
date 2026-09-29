@@ -128,12 +128,23 @@ def _bureau_features(bureau_facilities: list) -> dict:
             "BUREAU_LEGAL_ACTION_FLAG": 0,
         }
 
+    # NULL-SAFETY: api/schemas.py's BureauFacility fields default to 0/0.0/
+    # False when a key is OMITTED — but a client can still send an EXPLICIT
+    # null (e.g. {"overdue_days": null}), which Pydantic passes through as
+    # None rather than the schema default. Coalesce every field read here
+    # regardless of which of those two cases produced the None, so a
+    # performing/clean facility (which commonly nulls its overdue-* fields
+    # entirely) is scored as "0 overdue", not a crash.
+    def _num(f: dict, key: str, default: float = 0.0) -> float:
+        v = f.get(key)
+        return default if v is None else v
+
     n = len(bureau_facilities)
-    active = sum(1 for f in bureau_facilities if f["status"] == "active")
-    total_outstanding = float(sum(f["outstanding_amount"] for f in bureau_facilities))
-    total_overdue = float(sum(f["overdue_amount"] for f in bureau_facilities))
-    max_overdue_days = max((f["overdue_days"] for f in bureau_facilities), default=0)
-    legal_flag = int(any(f["legal_action_flag"] for f in bureau_facilities))
+    active = sum(1 for f in bureau_facilities if f.get("status") == "active")
+    total_outstanding = float(sum(_num(f, "outstanding_amount") for f in bureau_facilities))
+    total_overdue = float(sum(_num(f, "overdue_amount") for f in bureau_facilities))
+    max_overdue_days = max((_num(f, "overdue_days") for f in bureau_facilities), default=0)
+    legal_flag = int(any(bool(f.get("legal_action_flag")) for f in bureau_facilities))
 
     return {
         "BUREAU_FACILITY_COUNT": n,
